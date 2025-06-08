@@ -13,7 +13,10 @@
 
     <section id="things">
 
-        <p>THINGS GO HERE!!!</p>
+        {% for thing in things %}
+
+        <p>{{ thing.name }} - ${{ thing.price }}</p>
+        {% endfor %}
 
     </section>
 

@@ -35,9 +35,9 @@ def connect_db():
 def home():
     client = connect_db()
     results = client.execute("SELECT * FROM things")
+    things = results.rows
                            
-    print(results)
-    return render_template("pages/home.jinja")
+    return render_template("pages/home.jinja", things=things)
 
 
 #-----------------------------------------------------------
