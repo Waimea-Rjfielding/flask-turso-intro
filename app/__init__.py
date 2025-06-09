@@ -45,7 +45,15 @@ def home():
 #-----------------------------------------------------------
 @app.get("/thing/<int:id>")
 def show_thing(id):
-    return render_template("pages/thing.jinja")
+    client = connect_db()
+    sql ="""
+        SELECT id, name, price
+        FROM things
+        WHERE id=?
+     """
+    values = [id]
+    results = client.execute
+    return render_template("pages/thing.jinja", thing=thing)
 
 
 #-----------------------------------------------------------
