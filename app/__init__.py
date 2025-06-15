@@ -1,6 +1,7 @@
 from flask          import Flask
 from flask          import render_template
 from flask          import redirect
+from flask          import request
 from libsql_client  import create_client_sync
 from dotenv         import load_dotenv
 import os
@@ -34,9 +35,9 @@ def connect_db():
 @app.get("/")
 def home():
     client = connect_db()
-    results = client.execute("SELECT * FROM things")
-    things = results.rows
-                           
+    result = client.execute("SELECT id, name FROM things")
+    things = result.rows
+
     return render_template("pages/home.jinja", things=things)
 
 
@@ -46,13 +47,17 @@ def home():
 @app.get("/thing/<int:id>")
 def show_thing(id):
     client = connect_db()
-    sql ="""
+
+    sql = """
         SELECT id, name, price
         FROM things
         WHERE id=?
-     """
+    """
     values = [id]
-    results = client.execute
+
+    result = client.execute(sql, values)
+    thing = result.rows[0]
+
     return render_template("pages/thing.jinja", thing=thing)
 
 
@@ -65,10 +70,45 @@ def new_thing():
 
 
 #-----------------------------------------------------------
+# Process a new thing
+#-----------------------------------------------------------
+@app.post("/add-thing")
+def add_thing():
+    # Get the data from the form
+    name = request.form.get("name")
+    price = request.form.get("price")
+
+    print(name)
+    print(price)
+
+
+    # Connect to the DB
+    client = connect_db()
+
+    # Add the thing to the DB
+    sql = "INSERT INTO things (name, price) VALUES (?, ?)"
+    values = [name, price]
+    client.execute(sql, values)
+
+    # Head to the home page to see the list
+    return redirect("/")
+
+
+
+#-----------------------------------------------------------
 # Thing deletion
 #-----------------------------------------------------------
 @app.get("/delete/<int:id>")
 def delete_thing(id):
+
+    # Connect to the DB
+    client = connect_db()
+
+    # Add the thing to the DB
+    sql = "DELETE FROM things WHERE id=?"
+    values = [id]
+    client.execute(sql, values)
+
     return redirect("/")
 
 
