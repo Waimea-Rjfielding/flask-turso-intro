@@ -15,7 +15,10 @@
 
         {% for thing in things %}
 
-        <p>{{ thing.name }} - ${{ thing.price }}</p>
+            <p><a href="/thing/{{ thing.id }}">
+                {{ thing.name }}
+            </a></p>
+
         {% endfor %}
 
     </section>
